@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      #current-token {
+        background-color: black;
+        color: black;
+        transition: background-color 0.3s, color 0.3s;
+      }
+      #current-token:hover {
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="width: 30rem; text-align: center">
+      <h1>ChatGPTのAPIトークンを設定してください</h1>
+      <input type="text" id="textbox" placeholder="Enter your token" />
+      <button id="submit">Submit</button>
+      <div style="font-size: 1rem">
+        現在のトークン
+        <p id="current-token" style="font-size: 0.9rem"></p>
+      </div>
+    </div>
+    <script src="popup.js"></script>
+  </body>
+</html>
