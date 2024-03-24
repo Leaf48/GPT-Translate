@@ -66,11 +66,18 @@ async function script() {
     setTimeout(() => {
       const selection = window.getSelection();
       const icon = document.getElementById("text-replace-icon");
+      const icon2 = document.getElementById("text-summ-icon");
 
       // タップしたtargetを使って判別
-      if (selection.toString().trim() === "" && e.target !== icon) {
+      if (
+        selection.toString().trim() === "" &&
+        (e.target !== icon || e.target !== icon2)
+      ) {
         if (icon) {
           icon.remove();
+        }
+        if (icon2) {
+          icon2.remove();
         }
       }
     }, 10);
@@ -82,33 +89,36 @@ async function script() {
 
       // もし別のアイコンが表示されているのならば、削除
       var existingIcon = document.getElementById("text-replace-icon");
+      var existingIcon2 = document.getElementById("text-summ-icon");
       if (existingIcon) {
         existingIcon.remove();
       }
+      if (existingIcon2) {
+        existingIcon2.remove();
+      }
 
-      // アイコン作成
-      var icon = document.createElement("span");
-      icon.id = "text-replace-icon";
-      icon.textContent = "⚙️"; // ここでアイコンを選ぶ
-      icon.style.position = "absolute";
-      // e.pageでマウスカーソルの座標を取得
-      icon.style.left = e.pageX + 20 + "px";
-      icon.style.top = e.pageY + 30 + "px";
-      icon.style.cursor = "pointer";
-      icon.style.backgroundColor = "#FFF";
-      icon.style.border = "1px solid #000";
-      icon.style.padding = "2px";
-      icon.style.borderRadius = "5px";
-      icon.style.zIndex = "100000";
-      document.body.appendChild(icon);
+      var icon = createIcon("text-replace-icon", "⚙️", 0, e);
 
       // アイコンをクリックしたときに削除と関数実行
       icon.addEventListener("click", async function () {
         icon.remove();
 
         // ChatGPTで翻訳
-        const res = await completion(currentSelectedText);
+        const res = await completion(
+          currentSelectedText,
+          "英語の場合は日本語へ,日本語の場合は英語へ翻訳してください.その他の言語はすべて日本語へ翻訳してください"
+        );
         // 置き換え実行
+        replaceSelectedText(currentSelectedText, res);
+      });
+
+      var summ_icon = createIcon("text-summ-icon", "⚡️", 30, e);
+      summ_icon.addEventListener("click", async () => {
+        summ_icon.remove();
+        const res = await completion(
+          currentSelectedText,
+          "原文に使われているキーワードを使って文章を要約して下さい"
+        );
         replaceSelectedText(currentSelectedText, res);
       });
 
@@ -118,8 +128,27 @@ async function script() {
   });
 }
 
+// アイコン作成
+function createIcon(id, iconText, offset, e) {
+  var icon = document.createElement("span");
+  icon.id = id;
+  icon.textContent = iconText; // ここでアイコンを選ぶ
+  icon.style.position = "absolute";
+  // e.pageでマウスカーソルの座標を取得
+  icon.style.left = e.pageX + 20 + offset + "px";
+  icon.style.top = e.pageY + 30 + offset + "px";
+  icon.style.cursor = "pointer";
+  icon.style.backgroundColor = "#FFF";
+  icon.style.border = "1px solid #000";
+  icon.style.padding = "2px";
+  icon.style.borderRadius = "5px";
+  icon.style.zIndex = `${100000 + offset}`;
+  document.body.appendChild(icon);
+  return icon;
+}
+
 // ChatGPTへリクエスト
-async function completion(text) {
+async function completion(text, instruction) {
   var token = await chrome.storage.local.get("gpt_translate_token");
   token = token.gpt_translate_token;
 
@@ -136,8 +165,7 @@ async function completion(text) {
     messages: [
       {
         role: "system",
-        content:
-          "英語の場合は日本語へ,日本語の場合は英語へ翻訳してください.その他の言語はすべて日本語へ翻訳してください",
+        content: instruction,
       },
       { role: "user", content: text },
     ],
