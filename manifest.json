@@ -3,7 +3,7 @@
   "name": "GPT-Translate",
   "description": "ChatGPTで文章を翻訳します",
   "version": "1.0",
-  "permissions": ["scripting", "storage", "activeTab"],
+  "permissions": ["scripting", "storage"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
