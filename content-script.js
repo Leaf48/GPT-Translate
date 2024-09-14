@@ -160,8 +160,8 @@ async function completion(text, instruction) {
   var apiUrl = "https://api.openai.com/v1/chat/completions";
 
   var body = JSON.stringify({
-    model: "gpt-3.5-turbo",
-    max_tokens: 400,
+    model: "gpt-4o-mini",
+    max_tokens: 1000,
     messages: [
       {
         role: "system",
