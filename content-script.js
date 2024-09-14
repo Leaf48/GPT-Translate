@@ -117,7 +117,7 @@ async function script() {
         summ_icon.remove();
         const res = await completion(
           currentSelectedText,
-          "原文に使われているキーワードを使って文章を要約して下さい"
+          "言語は原文と全く同じ言語を使いなさい.原文に使われているキーワードを使って文章を要約して下さい.キーワードとなる部分は必ず原文を抜き出して使用しなさい"
         );
         replaceSelectedText(currentSelectedText, res);
       });
